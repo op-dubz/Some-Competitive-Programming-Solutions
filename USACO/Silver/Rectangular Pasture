@@ -1,0 +1,48 @@
+// https://usaco.org/index.php?page=viewproblem2&cpid=1063 
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <map>
+using namespace std;
+typedef long long ll;
+#define maxn 100001
+ll n, res = 1; 
+void coordinateCompression(vector<ll>& a) {
+  vector<ll> b = a;
+  sort(b.begin(), b.end());
+  map<ll, ll> m;
+  for (int i = 0; i < n; i++) {
+      m[b[i]] = i;
+  }
+  for (int i = 0; i < n; i++) {
+      a[i] = m[a[i]] + 1;
+  }
+}
+int main() { 
+   ios_base::sync_with_stdio(false); cin.tie(0); cout.tie(0);
+   cin >> n;
+   vector<ll> x(n), y(n);
+   for (int i = 0; i < n; i++) {
+       cin >> x[i] >> y[i];
+   }
+   coordinateCompression(x), coordinateCompression(y);
+   vector<vector<ll> > prefix(n+1, vector<ll>(n+1, 0));
+   for (int i = 0; i < n; i++) {
+       prefix[y[i]][x[i]]++;
+   }
+   for (int i = 1; i <= n; i++) {
+       for (int j = 1; j <= n; j++) {
+           prefix[i][j] += prefix[i-1][j] + prefix[i][j-1] - prefix[i-1][j-1];
+       }
+   }
+   for (int i = 0; i < n; i++) {
+       for (int j = i; j < n; j++) { //vertical lines
+           ll minY = min(y[i], y[j]), maxY = max(y[i], y[j]);
+           ll minX = min(x[i], x[j]), maxX = max(x[i], x[j]);
+           ll below = prefix[minY - 1][maxX] - prefix[minY - 1][minX - 1];
+           ll above = prefix[n][maxX] - prefix[n][minX - 1] - prefix[maxY][maxX] + prefix[maxY][minX - 1];
+           res += (below + 1) * (above + 1);
+       }
+   }
+   cout << res;
+}
