@@ -1,0 +1,33 @@
+// https://kilonova.ro/problems/242  
+// https://github.com/stefdasca/statement-translator/blob/main/Kilonova/0200-0299/Processed_0242.md 
+#include <iostream> 
+#include <vector> 
+#include <algorithm> 
+using namespace std; 
+typedef long long ll; 
+ll res = 1, n, s, p1 = 0, sum = 0; 
+vector<ll> v; 
+int main() {
+    cin >> n >> s; 
+    for (int i = 0; i < n; i++) {
+        ll a; 
+        cin >> a; 
+        v.push_back(a); 
+    } 
+    sort(v.begin(), v.end()); 
+    vector<ll> prefixSum(n+1, 0), prefixDifference(n+1, 0); 
+    for (int i = 0; i < n; i++) { 
+        prefixSum[i+1] = prefixSum[i] + v[i]; 
+    } 
+    for (int i = 1; i < n; i++) { 
+        sum += (i - p1) * v[i] - (prefixSum[i] - prefixSum[p1]); 
+        while (p1 + 1 < i && sum > s) { 
+            sum += -(prefixSum[i+1] - prefixSum[p1+1]) + (i - p1) * v[p1]; 
+            p1++; 
+        } 
+        if (sum <= s) { 
+            res = max(res, i - p1 + 1); 
+        }
+    } 
+    cout << res; 
+} 
