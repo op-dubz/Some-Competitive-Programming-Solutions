@@ -1,0 +1,78 @@
+// https://oj.uz/problem/view/JOI20_ho_t2
+#include <iostream> 
+#include <vector> 
+#include <algorithm> 
+using namespace std; 
+#define INF 2000000000
+string s2 = "", s = ""; 
+vector<int> v[3]; 
+int zerosize, onesize, twosize, J = 0, O = 0, I = 0, JO = 0, OI = 0, n, k, res = INF, p0 = 0, p1 = 0, p2 = 0; ; 
+void solve() { 
+    bool notfirst = false; 
+    for (int i = 1; i < k; i++) {
+        J += v[0][i] - v[0][i-1] - 1; 
+        O += v[1][i] - v[1][i-1] - 1; 
+        I += v[2][i] - v[2][i-1] - 1; 
+    }
+    if (v[1][0] > v[0][k-1]) JO = v[1][0] - v[0][k-1] - 1; 
+    if (v[2][0] > v[1][k-1]) OI = v[2][0] - v[1][k-1] - 1; 
+    while (p0 + k <= zerosize && p1 + k <= onesize && p2 + k <= twosize) { 
+        //find J 
+        if (notfirst) J += v[0][p0+k-1] - v[0][p0+k-2] - (v[0][p0] - v[0][p0-1]); 
+        // find O 
+        if (v[1][p1] < v[0][p0+k-1]) {
+            while (p1 + k <= onesize && v[1][p1] < v[0][p0+k-1]) { 
+                if (p1 + k == onesize) return; 
+                O -= v[1][p1+1] - v[1][p1] - 1; 
+                O += v[1][p1+k] - v[1][p1+k-1] - 1; 
+                p1++; 
+            } 
+            
+        } 
+        JO = v[1][p1] - v[0][p0+k-1] - 1; 
+        // find I 
+        if (v[2][p2] < v[1][p1+k-1]) {
+            while (p2 + k <= twosize && v[2][p2] < v[1][p1+k-1]) { 
+                if (p2 + k == twosize) return; 
+                I -= v[2][p2+1] - v[2][p2] - 1; 
+                I += v[2][p2+k] - v[2][p2+k-1] - 1; 
+                p2++; 
+            } 
+            
+        }
+        OI = v[2][p2] - v[1][p1+k-1] - 1; 
+        res = min(res, J + O + I + JO + OI); 
+        p0++; 
+        notfirst = true; 
+    }  
+}
+int main() { 
+    cin >> n >> k; 
+    bool jyet = false, iyet = false; 
+    for (int i = 0; i < n; i++) {
+        char a; 
+        cin >> a; 
+        if (a == 'J') jyet = true; 
+        if (jyet) s2 += a; 
+    } 
+    for (int i = s2.length() - 1; i >= 0; i--) {
+        if (s2[i] == 'I') iyet = true; 
+        if (iyet) s += s2[i]; 
+    } 
+    reverse(s.begin(), s.end()); 
+    n = s.length(); 
+    for (int i = 0; i < n; i++) {
+        if (s[i] == 'J') v[0].push_back(i); 
+        else if (s[i] == 'O') v[1].push_back(i); 
+        else v[2].push_back(i); 
+    } 
+    zerosize = v[0].size(), onesize = v[1].size(), twosize = v[2].size(); 
+    if (n == 0 || zerosize < k || onesize < k || twosize < k) { 
+        cout << -1; 
+        return 0; 
+    }
+    solve(); 
+    if (res == INF) cout << -1; 
+    else cout << res; 
+} 
+// 13 2 JOJIOIOOJOJII
