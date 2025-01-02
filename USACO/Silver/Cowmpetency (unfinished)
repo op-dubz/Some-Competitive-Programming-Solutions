@@ -1,0 +1,105 @@
+// https://usaco.org/index.php?page=viewproblem2&cpid=1374 
+#include <iostream> 
+#include <vector> 
+#include <climits> 
+#include <array> 
+using namespace std; 
+typedef long long ll; 
+ll n, t, q, C; 
+struct cow {
+    bool canChange = false; 
+    ll value, cowmpetency = -1; 
+}; 
+void solve() { 
+    cin >> n >> q >> C; 
+    vector<cow> v(n+1); 
+    for (int i = 1; i <= n; i++) {
+        cin >> v[i].value; 
+        if (v[i].value == 0) v[i].canChange = true; 
+    } 
+    for (int i = 0; i < q; i++) {
+        ll a, b; 
+        cin >> a >> b; 
+        v[a].cowmpetency = b; 
+    } 
+    ll runningMax = 0, cur = 1; 
+    bool nothing = true; 
+    while (cur <= n) { //checking for inconsistencies in the input 
+        if (nothing) {
+            if (v[cur].cowmpetency == -1) { 
+                // if (v[cur].canChange) { 
+                //     v[cur].value = 1; 
+                //     v[cur].canChange = false; 
+                // } 
+                cur++; 
+                continue; 
+            } 
+            else nothing = false; 
+        }
+        ll store = v[cur].cowmpetency; 
+        cur++; 
+        while (cur < store) { 
+            if (v[cur].cowmpetency == -1) {
+                v[cur].cowmpetency = store; 
+            }
+            else if (v[cur].cowmpetency != store) {
+                cout << -1 << endl; 
+                return; 
+            } 
+            cur++; 
+        } 
+        nothing = true; 
+    } 
+    // for (int i = 1; i <= n; i++) cout << v[i].cowmpetency << " "; 
+    cur = 1; 
+    while (cur <= n) { 
+        // cout << "2nd"; 
+        runningMax = max(runningMax, v[cur].value);  
+        if (v[cur].cowmpetency == -1) { 
+            if (v[cur].canChange) v[cur].value = 1; 
+            cur++; 
+            continue; 
+        }
+        ll store = v[cur].cowmpetency, cur2 = cur; 
+        if (v[cur].canChange) {
+            v[cur].value = 1; 
+            v[cur].canChange = false; 
+            runningMax = max(runningMax, 1LL); 
+        }
+        cur++; 
+        while (cur < store) { 
+            if (v[cur].value == 0) v[cur].value = 1; 
+            else {
+                if (v[cur].value > runningMax) { 
+                    cout << "in1 " << cur; // cannot just output -1 because you might be able to raise the value of one of the numbers
+                    cout << -1 << endl; // from 1 to cur2 inclusively so that it meets this condition
+                    return; 
+                }
+            }
+            cur++; 
+        } 
+        if (v[cur].canChange) { //now cur == store 
+            v[cur].value = runningMax + 1; 
+            v[cur].canChange = false; 
+        }
+        else {
+            if (v[cur].value <= runningMax) { 
+                cout << "in2 " << v[cur].value; 
+                cout << -1 << endl; 
+                return; 
+            }      
+        }
+    }
+    for (int i = 1; i <= n; i++) {
+        if (v[i].value > C) {
+            cout << -1 << endl; 
+            return; 
+        }  
+    }  
+    for (int i = 1; i <= n; i++) cout << v[i].value << " "; 
+    cout << endl; 
+} 
+int main() {
+    cin >> t; 
+    while (t--) solve(); 
+} 
