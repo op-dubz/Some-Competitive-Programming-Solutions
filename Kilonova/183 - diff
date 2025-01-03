@@ -1,2 +1,84 @@
 // https://github.com/stefdasca/statement-translator/blob/main/Kilonova/0100-0199/Processed_0183.md 
 // https://kilonova.ro/problems/183/ 
+// does not run in time for some reason. the code runs in under a second but not in 80 ms. 
+
+// #pragma GCC optimize("Ofast,unroll-loops") 
+// #pragma GCC target("avx2,popcnt,lzcnt,abm,bmi,bmi2,fma") 
+
+#include <iostream> 
+#include <vector> 
+#include <fstream> 
+using namespace std; 
+typedef long long ll; 
+#define pii pair<int,int> 
+#define ff first 
+#define ss second 
+int n, m, maxSum = 1, minSum = -1; 
+vector<int> v; 
+pii posSumReached[100001], negSumReached[100001]; 
+void subarrays(bool findingMaxSum) { 
+    int overallMax = -1000000000, L = 1, R = 1, curSum = 0, start = 1; 
+    for (int i = 1; i <= n; i++) { 
+        if (v[i] > v[i] + curSum) {
+            start = i; 
+        } 
+        curSum = max(curSum + v[i], v[i]); 
+        if (curSum > overallMax) {
+            R = i; 
+            L = start; 
+            overallMax = curSum; 
+        }
+    }
+    int runningSum = 0; 
+    for (int i = L; i <= R; i++) { 
+        runningSum += v[i]; 
+        if (findingMaxSum) {
+            posSumReached[runningSum] = {L, i}; 
+        }
+        else {
+            negSumReached[runningSum] = {L, i}; 
+        }
+        
+    }
+}
+int main() { 
+    ifstream cin("diff.in");
+    ofstream cout("diff.out");
+    cin >> n >> m; 
+    v.resize(n+1); 
+    for (int i = 1; i <= n; i++) {
+        cin >> v[i]; 
+        if (v[i] == 0) v[i] = -1; 
+    } 
+    int zeroQueryAnswer = -1; 
+    for (int i = 1; i < n; i++) { // if query = 0, then you just need to find consecutive set of 1 and 0
+        if (v[i] == -v[i+1]) {
+            zeroQueryAnswer = i; 
+            break; 
+        }
+    } 
+    subarrays(true); 
+    for (int i = 1; i <= n; i++) v[i] = -v[i]; 
+    subarrays(false); 
+    while (m--) { 
+        int a; 
+        cin >> a; 
+        if (a == 0) {
+            if (zeroQueryAnswer == -1) cout << -1 << endl; 
+            else cout << zeroQueryAnswer << " " << zeroQueryAnswer + 1 << endl; 
+        }
+        else if (a > 0) {
+            if (a <= n && posSumReached[a].ff != 0) {
+                cout << posSumReached[a].ff << " " << posSumReached[a].ss << endl; 
+            }
+            else cout << -1 << endl; 
+        }
+        else if (a < 0) { 
+            a *= -1; 
+            if (a <= n && negSumReached[a].ff != 0) {
+                cout << negSumReached[a].ff << " " << negSumReached[a].ss << endl; 
+            }
+            else cout << -1 << endl; 
+        }
+    }
+} 
