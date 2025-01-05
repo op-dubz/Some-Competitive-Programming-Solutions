@@ -1,0 +1,44 @@
+// https://codeforces.com/problemset/problem/1313/C1
+#pragma GCC optimize("Ofast,unroll-loops") 
+
+#include <iostream> 
+#include <vector> 
+#include <algorithm> 
+using namespace std; 
+typedef long long ll; 
+#define maxn 1000 
+ll n, maxi = 0; 
+vector<ll> v, res; 
+int main() {
+    cin >> n; 
+    v.resize(n); 
+    for (ll i = 0; i < n; i++) {
+        cin >> v[i]; 
+    }
+    for (ll i = 0; i < n; i++) { 
+        vector<ll> canChange; 
+        canChange.push_back(v[i]); 
+        ll sum = v[i], biggest = v[i]; 
+        for (ll j = i - 1; j >= 0; j--) {
+            if (v[j] < biggest) {
+                biggest = v[j]; 
+            }
+            sum += biggest; 
+            canChange.push_back(biggest); 
+        } 
+        reverse(canChange.begin(), canChange.end()); 
+        biggest = v[i]; 
+        for (ll j = i + 1; j < n; j++) {
+            if (v[j] < biggest) { 
+                biggest = v[j]; 
+            }
+            sum += biggest; 
+            canChange.push_back(biggest); 
+        } 
+        if (sum > maxi) {
+            res = canChange; 
+            maxi = sum; 
+        }
+    }
+    for (ll i : res) cout << i << " "; 
+}
