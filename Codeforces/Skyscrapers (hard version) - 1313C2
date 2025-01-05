@@ -1,0 +1,53 @@
+// https://codeforces.com/problemset/problem/1313/C2
+#pragma GCC optimize("Ofast,unroll-loops") 
+
+#include <iostream> 
+#include <vector> 
+#include <algorithm> 
+#include <stack> 
+using namespace std; 
+typedef long long ll; 
+#define pll pair<ll,ll> 
+#define ff first 
+#define ss second 
+#define mp make_pair
+#define maxn 1000 
+ll n, maxi = 0; 
+vector<ll> v; 
+void solve(vector<ll>& prefix) { 
+    ll sum = 0; 
+    stack<pll> s; //value, number 
+    for (int i = 0; i < n; i++) { 
+        ll len = 1; 
+        while (!s.empty() && s.top().ff >= v[i]) {
+            len += s.top().ss; 
+            sum -= s.top().ff * s.top().ss; 
+            s.pop(); 
+        }
+        sum += len * v[i]; 
+        s.push(mp(v[i], len)); 
+        prefix[i] = sum; 
+    }
+    reverse(v.begin(), v.end()); 
+}
+int main() { 
+    cin >> n; 
+    v.resize(n); 
+    for (ll i = 0; i < n; i++) {
+        cin >> v[i]; 
+    }
+    vector<ll> leftSide(n, 0), rightSide(n, 0); 
+    ll total = -1, big = v[0], cur = -1; 
+    solve(leftSide); 
+    solve(rightSide); 
+    reverse(rightSide.begin(), rightSide.end()); 
+    for (int i = 0; i < n; i++) {
+        if (-v[i] + leftSide[i] + rightSide[i] > total) {
+            total = -v[i] + leftSide[i] + rightSide[i]; 
+            cur = i; 
+        }
+    }
+    for (int i = cur - 1; i >= 0; i--) v[i] = min(v[i+1], v[i]); 
+    for (int i = cur + 1; i < n; i++) v[i] = min(v[i-1], v[i]); 
+    for (ll i : v) cout << i << " "; 
+}
