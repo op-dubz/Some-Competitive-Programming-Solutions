@@ -1,0 +1,17 @@
+#include <iostream> 
+using namespace std; 
+typedef long long ll; 
+ll n, k, t; 
+int main() {
+    cin >> t; 
+    while (t--) {
+        cin >> n >> k; 
+        ll numAdds = 1, sum = 0, cur = n; 
+        while (cur >= k) {
+            if (cur % 2 == 1) sum += numAdds; 
+            numAdds *= 2; 
+            cur /= 2; 
+        } 
+        cout << (n+1) * sum / 2 << endl; 
+    }
+}
