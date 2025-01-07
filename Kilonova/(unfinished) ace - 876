@@ -1,0 +1,72 @@
+// https://kilonova.ro/problems/876
+// https://github.com/stefdasca/statement-translator/blob/main/Kilonova/0800-0899/Processed_0876.md 
+#include <iostream> 
+#include <map> 
+#include <algorithm> 
+#include <numeric> 
+#include <cmath> 
+#include <cstdio> 
+using namespace std; 
+#define pii pair<int,int> 
+#define ff first 
+#define ss second 
+#define mp make_pair
+int n, m, k, res = 2; 
+map<pii, pair<int,double> > real; //row, col (gcd) --> height, distance 
+void dothestuff(int r, int c, int height) { 
+    //find distance 
+    double dist = sqrt((double)((n - r) * (n - r) + (n - c) * (n - c))); 
+    //simplify r, c 
+    int d = gcd(r, c); 
+    r /= d, c /= d; 
+    pii p = mp(r, c); 
+    if (real.find(p) == real.end()) {
+        res++; 
+        real[p] = mp(height, dist); 
+        //cout << r * d << " " << c * d << " " << height << " " << dist << endl; 
+    }
+    else {
+        pair<int,double> p2 = real[p]; 
+        //cout << r * d << " " << c * d << " " << p2.ff << " " << p2.ss << " " << height << " " << dist << endl; 
+        if (dist * p2.ff < p2.ss * height) {   
+            real[p] = mp(height, dist); 
+            res++; 
+            //cout << r * d << " " << c * d << " " << p2.ff << " " << p2.ss << " " << height << " " << dist << endl; 
+        }
+    }
+}
+int main() { 
+    freopen("ace.in", "r", stdin); 
+    freopen("ace.out", "w", stdout); 
+    cin >> k >> n >> m; 
+    int mat[n+1][m+1]; 
+    for (int i = 1; i <= n; i++) {
+        for (int j = 1; j <= m; j++) {
+            cin >> mat[i][j]; 
+        }
+    } 
+    int curD = 1, curH = mat[n][m-1]; 
+    for (int i = m-2; i >= 1; i--) {
+        if (mat[n][i] * curD > curH * (m - i)) {
+            res++; 
+            curH = mat[n][i], curD = m - i; 
+        }
+    } 
+    curD = 1, curH = mat[n-1][m]; 
+    for (int i = n-2; i >= 1; i--) {
+        if (mat[i][n] * curD > curH * (n - i)) {
+            res++; 
+            curH = mat[i][n], curD = n - i; 
+        }
+    } 
+    if (k == 1) {
+        cout << res; 
+        return 0; 
+    } 
+    for (int i = n-1 ; i >= 1; i--) { 
+        for (int j = 1; j <= m-1; j++) {
+            dothestuff(i, j, mat[i][j]); 
+        }
+    } 
+    cout << res; 
+}
