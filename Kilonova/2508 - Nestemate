@@ -1,0 +1,86 @@
+// https://kilonova.ro/problems/2508
+// https://github.com/stefdasca/statement-translator/blob/main/Kilonova/2500-2599/Processed_2508.md
+#include <iostream> 
+#include <vector> 
+#include <algorithm> 
+#include <queue> 
+#include <numeric> 
+#include <set> 
+#include <iterator> 
+#include <stack> 
+#include <map> 
+#include <unordered_map> 
+#include <climits> 
+using namespace std; 
+typedef long long ll; 
+ll n, t, A, B; 
+struct gemstone { 
+    vector<ll> v; 
+    ll cnt; 
+    // Comparison operator 
+    bool operator<(const gemstone& other) const {  
+        return tie(v[0], v[1], v[2]) < tie(other.v[0], other.v[1], other.v[2]);
+    }  
+}; 
+void solve() { 
+    cin >> n >> A >> B; 
+    unordered_map<ll, set<gemstone> > adj; 
+    gemstone start, finish; 
+    ll res = -1; 
+    for (ll i = 0; i < n; i++) { 
+        ll a, b, c; 
+        cin >> a >> b >> c; 
+        vector<ll> es = {a, b, c}; 
+        sort(es.begin(), es.end()); 
+        if (A == i + 1) {
+            start = {es, 0}; 
+            continue; 
+        }
+        else if (B == i + 1) finish = {es, LLONG_MAX}; 
+        adj[a].insert({es, LLONG_MAX}); 
+        adj[b].insert({es, LLONG_MAX}); 
+        adj[c].insert({es, LLONG_MAX}); 
+    } 
+    queue<gemstone> q; 
+    q.push(start); 
+    while (!q.empty()) {
+        gemstone g = q.front(); 
+        q.pop(); 
+        g.cnt++; 
+        for (ll i = 0; i < 3; i++) { 
+            vector<gemstone> p; 
+            for (gemstone j : adj[g.v[i]]) { 
+                if (j.v[0] == finish.v[0] && j.v[1] == finish.v[1] && j.v[2] == finish.v[2]) {
+                    res = g.cnt; 
+                    break; 
+                } 
+                vector<ll> rs; 
+                set_intersection(g.v.begin(), g.v.end(), j.v.begin(), j.v.end(), back_inserter(rs)); 
+                if (rs.empty()) {
+                    continue; 
+                }
+                gemstone o = j; 
+                p.push_back(j); 
+                o.cnt = g.cnt; 
+                q.push(o); 
+            }  
+            for (gemstone e : p) {
+                adj[e.v[0]].erase(e); 
+                adj[e.v[1]].erase(e); 
+                adj[e.v[2]].erase(e); 
+            }
+        } 
+        if (res != -1) break;    
+        // cout << "(" << g.v[0] << "," << g.v[1] << "," << g.v[2] << ")  "; 
+    } 
+    cout << res << endl; 
+}
+int main() { 
+    // ios_base::sync_with_stdio(false); cin.tie(0); cout.tie(0); 
+    freopen("nestemate.in", "r", stdin); 
+    freopen("nestemate.out", "w", stdout); 
+    cin >> t; 
+    while (t--) { 
+        solve(); 
+    } 
+} 
