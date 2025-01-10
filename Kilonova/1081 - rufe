@@ -1,0 +1,108 @@
+// https://kilonova.ro/problems/1081 
+// https://github.com/stefdasca/statement-translator/blob/main/Kilonova/1000-1099/Processed_1081.md 
+
+// #pragma GCC optimize("Ofast,unroll-loops") 
+
+#include <iostream> 
+#include <vector> 
+#include <algorithm> 
+#include <queue> 
+#include <numeric> 
+#include <set> 
+#include <iterator> 
+#include <stack> 
+#include <map> 
+#include <unordered_map> 
+#include <climits> 
+using namespace std; 
+typedef long long ll; 
+ll n, m, A, B, K; 
+bool solve(ll minValue) {
+    ll total = 0; 
+    // upper right 
+    if (A - 1 + m - B >= minValue) { 
+        
+        total = (m - B + 1) * A; 
+        // if (minValue == 4) cout << m << " " << B << " " << A << ":::";
+        total -= (minValue) * (minValue + 1) / 2; 
+        
+        if (A < minValue) {
+            total += (minValue - A) * (minValue - A + 1) / 2; 
+        } 
+        
+        if (m - B + 1 < minValue) {
+            total += (minValue - (m - B + 1)) * (minValue - (m - B + 1) + 1) / 2; 
+        }
+         
+    } 
+    // cout << minValue << " " << total << " "; 
+    // upper left 
+    B--; 
+    minValue--; 
+    ll oo = total; 
+    if (A + B - 2 >= minValue) {
+        total += A * B; 
+        total -= (minValue) * (minValue + 1) / 2; 
+        if (B < minValue) {
+            total += (minValue - B) * (minValue - B + 1) / 2; 
+        }
+        if (A < minValue) {
+            total += (minValue - A) * (minValue - A + 1) / 2; 
+        }
+    } 
+    // cout << total - oo << " "; 
+    oo = total; 
+    // lower left 
+    A++; 
+    minValue--;          
+    if (n - A + B - 1 >= minValue) {
+        total += (n - A + 1) * B; 
+        total -= (minValue) * (minValue + 1) / 2; 
+        if (B < minValue) {
+            total += (minValue - B) * (minValue - B + 1) / 2; 
+        }
+        if (n - A + 1 < minValue) {
+            total += (minValue - (n - A + 1)) * (minValue - (n - A + 1) + 1) / 2; 
+        }
+    } 
+    // cout << total - oo << " "; 
+    oo = total; 
+    // lower right  
+    B++; 
+    minValue++; 
+    if (m - B + n - A >= minValue) {
+        total += (n - A + 1) * (m - B + 1); 
+        total -= (minValue) * (minValue + 1) / 2; 
+        if (m - B + 1 < minValue) {
+            total += (minValue - (m - B + 1)) * (minValue - (m - B + 1) + 1) / 2; 
+        }
+        if (n - A + 1 < minValue) {
+            total += (minValue - (n - A + 1)) * (minValue - (n - A + 1) + 1) / 2; 
+        }
+    } 
+    // cout << total - oo << endl; 
+    A--; 
+    // cout << total << endl; 
+    return total >= K; 
+}
+int main() { 
+    // ios_base::sync_with_stdio(false); cin.tie(0); cout.tie(0); 
+    freopen("rufe.in", "r", stdin); 
+    freopen("rufe.out", "w", stdout); 
+    cin >> n >> m >> A >> B >> K; 
+    ll left = 1, right = max(A + B - 2, max(A - 1 + m - B, max(n - A + B - 1, m - B + n - A))), res; 
+    // solve(K); 
+    while (left <= right) { //binary search for the minimum value 
+        ll mid = (left + right) / 2; 
+        if (solve(mid)) {
+            res = mid; 
+            left = mid + 1; 
+        }
+        else right = mid - 1; 
+    } 
+    cout << res; 
+} 
+// array: 1, 2, 4
+// list: 3, 6 
+
+// input: 1 3 1 2 2 6 4 3 6 
