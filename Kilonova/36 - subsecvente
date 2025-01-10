@@ -1,0 +1,69 @@
+// https://kilonova.ro/problems/36
+// https://github.com/stefdasca/statement-translator/blob/main/Kilonova/0000-0099/Processed_0036.md 
+#include <iostream> 
+#include <set> 
+#include <vector> 
+#include <algorithm> 
+#include <cstdio> 
+#include <cmath> 
+using namespace std; 
+typedef long long ll; 
+int n; 
+vector<vector<int> > matrix(4); 
+bool solve(int arraylen) {
+    vector<set<ll> > many(n); 
+    for (int p = 0; p < n; p++) { 
+        ll value = 0; 
+        for (int i = 0; i < arraylen; i++) {
+            if (matrix[p][i] == 1) {
+                value += pow(2, arraylen - i - 1); 
+            }
+        }
+        many[p].insert(value); 
+        for (int i = 1; i <= matrix[p].size() - arraylen; i++) {
+            if (matrix[p][i-1] == 1) value -= pow(2, arraylen - 1); 
+            value *= 2; 
+            if (matrix[p][i+arraylen-1] == 1) value++; 
+            many[p].insert(value); 
+        }
+    }
+    set<ll> s; 
+    for (int i = 0; i < n - 1; i++) {
+        set_intersection(many[i].begin(), many[i].end(), many[i+1].begin(), many[i+1].end(), inserter(s, s.begin())); 
+        if (!s.empty()) {
+            many[i+1] = s; 
+            s.clear(); 
+            continue; 
+        }
+        else return false; 
+    }
+    return true; 
+}
+int main() { 
+    freopen("subsecvente.in", "r", stdin); 
+    freopen("subsecvente.out", "w", stdout); 
+    cin >> n; 
+    int right = 2000000000, left = 1, res; 
+    for (int i = 0; i < n; i++) { 
+        string s; 
+        cin >> s; 
+        vector<int> g; 
+        for (int j = 0; j < s.length(); j++) {
+            g.push_back(s[j] - 'a'); 
+        }
+        matrix[i] = g; 
+        right = min(right, (int) g.size()); 
+    } 
+    right = min(right, 60); 
+    while (left <= right) {
+        int mid = (left + right) / 2; 
+        if (solve(mid)) {
+            left = mid + 1; 
+            res = mid; 
+        }
+        else {
+            right = mid - 1; 
+        }
+    } 
+    cout << res; 
+}
