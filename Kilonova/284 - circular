@@ -1,0 +1,54 @@
+// https://github.com/stefdasca/statement-translator/blob/main/Kilonova/0200-0299/Processed_0284.md 
+// https://kilonova.ro/problems/284 
+#include <iostream> 
+#include <vector> 
+#include <cstdio> 
+#include <map> 
+using namespace std; 
+typedef long long ll; 
+#define pcc pair<char, char> 
+#define mp make_pair
+
+ll c, res1 = 0, res2 = 1, mod = 666013; 
+string blue, red, alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZ", lexico = ""; 
+map<pcc, ll> m; 
+void distances() {
+    for (int i = 0; i < 26; i++) { 
+        char a = alpha[i]; 
+        for (int j = i; j < 26; j++) { 
+            char b = alpha[j]; 
+            ll dis = min(abs(a - b), a < b ? 'Z' - b + 1 + a - 'A' : 1 + b - 'A' + 'Z' - a); 
+            m[mp(a, b)] = m[mp(b, a)] = dis; 
+        }
+    }
+}
+int main() { 
+    freopen("circular.in", "r", stdin); 
+    freopen("circular.out", "w", stdout); 
+    cin >> c >> blue >> red; 
+    distances(); 
+    if (c == 1) { 
+        char a = 'A'; 
+        ll res = 0; 
+        for (int i = 0; i < blue.length(); i++) {
+            res += m[mp(a, blue[i])]; 
+            a = blue[i]; 
+        } 
+        cout << res; 
+        return 0; 
+    } 
+    for (int i = 0; i < blue.length() - 1; i++) {
+        map<ll, vector<char> > distances; 
+        for (int j = 0; j < red.length(); j++) {
+            distances[m[mp(blue[i], red[j])] + m[mp(blue[i+1], red[j])]].push_back(red[j]); 
+        } 
+        vector<char> p = distances.begin()->second; 
+        res1 += distances.begin()->first; 
+        res2 *= p.size(); 
+        res2 %= mod; 
+        lexico += blue[i]; 
+        lexico += p[0]; 
+    } 
+    lexico += blue[blue.length()-1]; 
+    cout << res1 + m[mp('A', blue[0])] << endl << res2 << endl << lexico; 
+} 
