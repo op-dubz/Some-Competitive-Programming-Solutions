@@ -1,0 +1,65 @@
+// https://usaco.org/index.php?page=viewproblem2&cpid=967 
+#include <iostream> 
+#include <algorithm> 
+#include <vector> 
+#include <queue> 
+using namespace std; 
+#define mp make_pair 
+#define ff first 
+#define ss second 
+#define pii pair<int,int> 
+int n, l, t, sum = 1, cursum = 0;  
+struct bruh {
+    int x, d, w; 
+}; 
+bool comp(bruh a, bruh b) {
+    return a.x < b.x; 
+}  
+int main() {  
+    freopen("meetings.in", "r", stdin); 
+    freopen("meetings.out", "w", stdout); 
+    cin >> n >> l; 
+    vector<bruh> v(n), goingleft; 
+    for (int i = 0; i < n; i++) { 
+        cin >> v[i].w >> v[i].x >> v[i].d; 
+        if (v[i].d == -1) goingleft.push_back(v[i]); 
+        sum += v[i].w; 
+    } 
+    sort(goingleft.begin(), goingleft.end(), comp); 
+    sum /= 2; 
+    sort(v.begin(), v.end(), comp); 
+    vector<int> left1, right1; 
+    for (int i = 0; i < n; i++) {
+        if (v[i].d == 1) {
+            right1.push_back(l - v[i].x); 
+        } 
+        else {
+            left1.push_back(v[i].x); 
+        } 
+    } 
+    vector<pii> p; 
+    for (int i = 0; i < left1.size(); i++) p.push_back(mp(left1[i], v[i].w)); 
+    for (int i = 0; i < right1.size(); i++) p.push_back(mp(right1[i], v[i+left1.size()].w)); 
+    sort(p.begin(), p.end()); 
+    for (int i = 0; i < p.size(); i++) {
+        cursum += p[i].ss; 
+        if (cursum >= sum) {
+            t = p[i].ff; 
+            break; 
+        }
+    } 
+    queue<int> q; // stores cows moving left 
+    int cur = 0, res = 0; 
+    for (int i = 0; i < n; i++) { 
+        if (v[i].d == 1) { 
+            while (cur < goingleft.size() && goingleft[cur].x < v[i].x) cur++; 
+            while (cur < goingleft.size() && goingleft[cur].x > v[i].x && v[i].x + 2 * t >= goingleft[cur].x) {
+                q.push(goingleft[cur].x); 
+                cur++; 
+            }  
+            while (!q.empty() && q.front() < v[i].x) q.pop(); 
+            res += q.size(); 
+        } 
+    } 
+    cout << res; 
+}
