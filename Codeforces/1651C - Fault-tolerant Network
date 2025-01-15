@@ -1,0 +1,52 @@
+// https://codeforces.com/problemset/problem/1651/C
+#include <iostream> 
+#include <vector> 
+#include <algorithm> 
+#include <queue> 
+#include <numeric> 
+#include <set> 
+#include <unordered_set> 
+#include <iterator> 
+#include <stack> 
+#include <map> 
+#include <unordered_map> 
+#include <climits> 
+#include <iomanip> 
+#include <cmath> 
+using namespace std; 
+typedef long long ll; 
+#define make_pair
+#define ff first 
+#define ss second 
+#define pdd pair<double, double> 
+#define pll pair<ll, ll> 
+#define pii pair<int,int> 
+#define maxn 100001 
+ll t; 
+void solve() {
+    ll n; 
+    cin >> n; 
+    vector<ll> one(n), two(n); 
+    for (int i = 0; i < n; i++) cin >> one[i]; 
+    for (int i = 0; i < n; i++) cin >> two[i]; 
+    ll res = min(abs(one[0] - two[n-1]) + abs(one[n-1] - two[0]), abs(one[0] - two[0]) + abs(one[n-1] - two[n-1])); 
+    ll bottomleft = 2000000000000, topleft = 2000000000000, bottomright = 2000000000000, topright = 2000000000000; 
+    for (ll i = 0; i < n; i++) {                          
+        bottomleft = min(bottomleft, abs(two[0] - one[i])); 
+        topleft = min(topleft, abs(one[0] - two[i])); 
+        topright = min(topright, abs(two[i] - one[n-1])); 
+        bottomright = min(bottomright, abs(one[i] - two[n-1])); 
+    }     
+    res = min(res, topleft + bottomleft + topright + bottomright); 
+    res = min(res, abs(one[0] - two[0]) + topright + bottomright); 
+    res = min(res, abs(one[n-1] - two[n-1]) + topleft + bottomleft); 
+    res = min(res, abs(one[0] - two[n-1]) + topright + bottomleft); 
+    res = min(res, abs(one[n-1] - two[0]) + topleft + bottomright); 
+    cout << res << endl;  
+}   
+int main() {   
+    // freopen("art2.in", "r", stdin); 
+    // freopen("art2.out", "w", stdout); 
+    cin >> t; 
+    while (t--) solve(); 
+}
