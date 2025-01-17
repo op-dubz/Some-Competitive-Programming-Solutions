@@ -1,0 +1,139 @@
+// https://github.com/stefdasca/statement-translator/blob/main/Kilonova/0900-0999/Processed_0900.md 
+// https://kilonova.ro/problems/900 
+#include <iostream> 
+#include <vector> 
+#include <algorithm> 
+#include <queue> 
+#include <numeric> 
+#include <set> 
+#include <unordered_set> 
+#include <iterator> 
+#include <stack> 
+#include <map> 
+#include <unordered_map> 
+#include <climits> 
+#include <iomanip> 
+#include <cmath> 
+#define pii pair<int,int> 
+#define piiii pair<pii, pii> 
+#define mp make_pair 
+#define ff first 
+#define ss second 
+using namespace std; 
+int n, C, numRooms = 0; 
+struct corner {
+    int area = 0, topleftR = INT_MAX, topleftC = INT_MAX, bottomrightR = -1, bottomrightC = -1; 
+}; 
+corner browhat, donotchange; 
+map<int, string> conversions; 
+map<piiii, bool> walls; 
+vector<vector<int> > visited(101, vector<int>(101, false)); 
+int dr[4] = {0,1,0,-1}; 
+int dc[4] = {-1,0,1,0}; 
+bool inBounds(int r, int c) {
+    return r >= 0 && r < n && c >= 0 && c < n; 
+}
+void init() { 
+    freopen("castel.in", "r", stdin); 
+    freopen("castel.out", "w", stdout); 
+    conversions[0] = "0000"; 
+    conversions[1] = "1000"; 
+    conversions[2] = "0200"; 
+    conversions[3] = "1100"; 
+    conversions[4] = "0010"; 
+    conversions[5] = "1010"; 
+    conversions[6] = "0110"; 
+    conversions[7] = "1110"; 
+    conversions[8] = "0001"; 
+    conversions[9] = "1001"; 
+    conversions[10] = "0101"; 
+    conversions[11] = "1101"; 
+    conversions[12] = "0011"; 
+    conversions[13] = "1011"; 
+    conversions[14] = "0111"; 
+    conversions[15] = "1111"; 
+}
+void dfs(int row, int col) {
+    visited[row][col] = true; 
+    browhat.area++; 
+    browhat.topleftR = min(browhat.topleftR, row + 1); //to change from 0 indexed to 1 indexed 
+    browhat.topleftC = min(browhat.topleftC, col + 1); 
+    browhat.bottomrightR = max(browhat.bottomrightR, row + 1); 
+    browhat.bottomrightC = max(browhat.bottomrightC, col + 1); 
+    // cout << "(" << row << ", " << col << ")" << endl; 
+    pii p = mp(row, col); 
+    for (int i = 0; i < 4; i++) {
+        int rr = row + dr[i], cc = col + dc[i]; 
+        if (inBounds(rr, cc) && !visited[rr][cc] && !walls[mp(p, mp(rr, cc))]) dfs(rr, cc); 
+    } 
+} 
+void beg(int row, int col) {
+    visited[row][col] = true; 
+    pii p = mp(row, col); 
+    for (int i = 0; i < 4; i++) {
+        int rr = row + dr[i], cc = col + dc[i]; 
+        if (inBounds(rr, cc) && !visited[rr][cc] && !walls[mp(p, mp(rr, cc))]) beg(rr, cc); 
+    }
+} 
+bool comp(corner a, corner b) {
+    if (a.area != b.area) return a.area > b.area; 
+    else if (a.topleftR != b.topleftR) return a.topleftR < b.topleftR; 
+    else return a.topleftC < b.topleftC; 
+}
+int main() {  
+    init(); 
+    cin >> C >> n;  
+    // cout << walls[mp(mp(0,0), mp(0,0))]; 
+    vector<corner> corners; 
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            int a; 
+            cin >> a; 
+            string s = conversions[a]; 
+            for (int k = 0; k < 4; k++) {
+                if (s[k] == '1') { 
+                    piiii p = mp(mp(i, j), mp(i+dr[k], j + dc[k])); 
+                    piiii p2 = mp(mp(i+dr[k], j + dc[k]), mp(i, j)); 
+                    walls[p] = walls[p2] = true; 
+                    // cout << i << ", " << j << " | " << i+dr[k] << ", " << j + dc[k] << endl; 
+                }
+            } 
+        }
+    } 
+    beg(0, 0); 
+    // for (int i = 0; i < n; i++) {
+    //     for (int j = 0; j < n; j++) {
+    //         cout << visited[i][j] << " "; 
+    //     } 
+    //     cout << endl; 
+    // }
+    for (int i = 1; i < n - 1; i++) {
+        for (int j = 1; j < n - 1; j++) {
+            if (!visited[i][j]) {
+                numRooms++; 
+                // cout << browhat.area << "    "; 
+                dfs(i, j); 
+                // cout << "AREAS" << i << " " << j << " " << browhat.area << endl << endl; 
+                corners.push_back(browhat); 
+                browhat = donotchange; 
+            }
+        }
+    } 
+    if (C == 1) {
+        cout << numRooms; 
+        return 0; 
+    } 
+    // for (corner i : corners) {
+    //     cout << i.area << " " << i.topleftR << " " << i.topleftC << " " << i.bottomrightR << " " << i.bottomrightC << endl; 
+    // }
+    // cout << endl; 
+    sort(corners.begin(), corners.end(), comp); 
+    // for (corner i : corners) {
+    //     cout << i.area << " " << i.topleftR << " " << i.topleftC << " " << i.bottomrightR << " " << i.bottomrightC << endl; 
+    // }
+    if (C == 2) {
+        cout << corners[0].area; 
+        return 0; 
+    } 
+    cout << corners[0].topleftR << " " << corners[0].topleftC << " " << corners[0].bottomrightR << " " << corners[0].bottomrightC; 
+}
