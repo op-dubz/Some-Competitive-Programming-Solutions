@@ -1,0 +1,55 @@
+// https://usaco.org/index.php?page=viewproblem2&cpid=859 
+#include <iostream> 
+#include <vector> 
+#include <algorithm> 
+#include <cstdio> 
+#include <queue> 
+using namespace std; 
+#define pii pair<int,int> 
+#define ff first 
+#define ss second 
+#define mp make_pair 
+int n, res = 0, curTime = 0, cur = 1; 
+struct convent { 
+    int seniority, startTime, len; 
+}; 
+struct myComp {
+    bool operator()(convent a, convent b) {
+        return a.seniority < b.seniority; 
+    }
+}; 
+bool comp(convent a, convent b) {
+    if (a.startTime == b.startTime) return a.seniority > b.seniority; 
+    else return a.startTime < b.startTime; 
+}
+priority_queue<convent, vector<convent>, myComp> q; 
+int main() { 
+    ios_base::sync_with_stdio(false); cin.tie(0); cout.tie(0); 
+    freopen("convention2.in", "r", stdin); 
+    freopen("convention2.out", "w", stdout); 
+    cin >> n; 
+    vector<convent> v(n); 
+    for (int i = 0; i < n; i++) {
+        convent a; 
+        cin >> a.startTime >> a.len; 
+        a.seniority = n-1 - i; 
+        v[i] = a; 
+    }    
+    sort(v.begin(), v.end(), comp); 
+    q.push(v[0]); 
+    while (!q.empty()) { 
+        convent a = q.top(); 
+        q.pop(); 
+        curTime = max(curTime + a.len, a.startTime + a.len); 
+        res = max(res, curTime - a.startTime - a.len); 
+        while (cur < n && v[cur].startTime < curTime) {
+            q.push(v[cur]); 
+            cur++; 
+        }
+        if (q.empty() && cur < n) { 
+            q.push(v[cur]); 
+            cur++; 
+        } 
+    } 
+    cout << res; 
+} 
