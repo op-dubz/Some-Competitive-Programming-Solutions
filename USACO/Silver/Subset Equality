@@ -1,0 +1,73 @@
+// https://usaco.org/index.php?page=viewproblem2&cpid=1231 
+#include <iostream>
+#include <cstring>
+#include <map>
+using namespace std;
+map<string, bool> m;
+string s1, s2;
+int q, len1, len2;
+void solve(string s) {
+   for (int i = 0; i < s.length(); i++) {
+       for (int j = i+1; j < s.length(); j++) {
+           if (!m[s.substr(i,1) + s.substr(j,1)]) {
+               cout << "N";
+               return;
+           }
+       }
+   }
+   cout << "Y";
+}
+int main() {
+   ios_base::sync_with_stdio(false); cin.tie(0); cout.tie(0);
+   cin >> s1 >> s2 >> q;
+   len1 = s1.length(), len2 = s2.length();
+   string alphabet = "abcdefghijklmnopqrstuvwxyz";
+   for (int i = 0; i <= 17; i++) {
+       string A = "", B = "";
+       for (int k = 0; k < len1; k++) {
+           if (s1[k] == alphabet[i]) {
+               A += s1[k];
+           }
+       }
+       for (int k = 0; k < len2; k++) {
+           if (s2[k] == alphabet[i]) {
+               B += s2[k];
+           }
+       }
+       if (A == B) m[alphabet.substr(i,1)] = true;
+       else m[alphabet.substr(i,1)] = false;
+   }
+   for (int i = 0; i <= 17; i++) {
+       if (m[alphabet.substr(i,1)]) {
+           for (int j = i+1; j <= 17; j++) {
+               if (m[alphabet.substr(j,1)]) {
+                   string A = "", B = "";
+                   for (int k = 0; k < len1; k++) {
+                       if (s1[k] == alphabet[i] || s1[k] == alphabet[j]) {
+                           A += s1[k];
+                       }
+                   }
+                   for (int k = 0; k < len2; k++) {
+                       if (s2[k] == alphabet[i] || s2[k] == alphabet[j]) {
+                           B += s2[k];
+                       }
+                   }
+                   if (A == B) m[alphabet.substr(i,1) + alphabet.substr(j,1)] = true;
+                   else m[alphabet.substr(i,1) + alphabet.substr(j,1)] = false;
+               }
+           }
+       }
+      
+   }
+   for (int i = 0; i < q; i++) {
+       string s;
+       cin >> s;
+       if (s.length() == 1) { 
+           if (m[s]) cout << "Y";
+           else cout << "N";
+       }
+       else {
+           solve(s);
+       }
+   }
+}
