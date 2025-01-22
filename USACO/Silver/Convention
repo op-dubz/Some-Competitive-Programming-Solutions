@@ -1,0 +1,50 @@
+// https://usaco.org/index.php?page=viewproblem2&cpid=858 
+#include <iostream> 
+#include <vector> 
+#include <algorithm> 
+#include <cstdio> 
+using namespace std; 
+#define pii pair<int,int> 
+#define ff first 
+#define ss second 
+#define mp make_pair 
+int n, m, c; 
+vector<int> v; 
+bool solve(int k) {
+    int numBuses = 0, startTime = -1, len = c; 
+    for (int i = 0; i < n; i++) {
+        if (len == c) {
+            len = 1, startTime = v[i]; 
+            numBuses++; 
+            continue; 
+        } 
+        if (startTime + k < v[i]) { 
+            len = 0; 
+            startTime = v[i]; 
+            numBuses++; 
+        } 
+        len++; 
+    } 
+    return numBuses <= m; 
+}
+int main() { 
+    ios_base::sync_with_stdio(false); cin.tie(0); cout.tie(0); 
+    freopen("convention.in", "r", stdin); 
+    freopen("convention.out", "w", stdout); 
+    cin >> n >> m >> c; 
+    for (int i = 0; i < n; i++) { 
+        int a; cin >> a;
+        v.push_back(a); 
+    } 
+    int res = 1000000001, left = 0, right = 1000000001; 
+    sort(v.begin(), v.end()); 
+    while (left <= right) { 
+        int mid = (left + right) / 2; 
+        if (solve(mid)) {
+            res = mid; 
+            right = mid - 1; 
+        } 
+        else left = mid + 1; 
+    } 
+    cout << res; 
+} 
