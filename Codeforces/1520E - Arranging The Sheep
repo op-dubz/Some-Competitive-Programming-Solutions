@@ -1,0 +1,39 @@
+// https://codeforces.com/contest/1520/problem/E 
+#include <iostream>
+#include <vector> 
+using namespace std; 
+typedef long long ll; 
+ll n, t; 
+void solve() {  
+    cin >> n; 
+    vector<char> v(n+1); 
+    vector<ll> fromL(n+2, 0), fromR(n+2, 0); 
+    for (int i = 1; i <= n; i++) cin >> v[i]; 
+    ll cur = 0, res = LLONG_MAX; 
+    for (int i = 1; i <= n; i++) { 
+        fromL[i] = fromL[i-1]; 
+        if (v[i] == '*') { 
+            cur++; 
+        }   
+        else fromL[i] += cur; 
+    }  
+    cur = 0;  
+    for (int i = n; i >= 1; i--) {   
+        fromR[i] = fromR[i+1]; 
+        if (v[i] == '*') { 
+            cur++; 
+        }
+        else fromR[i] += cur; 
+    } 
+    for (int i = 1; i <= n; i++) {
+        res = min(res, min(fromL[i-1] + fromR[i], fromL[i] + fromR[i+1])); 
+    }  
+    cout << res << endl; 
+}
+int main() {
+    ios_base::sync_with_stdio(false); cin.tie(0); cout.tie(0);
+    // freopen("poseidon.in", "r", stdin); 
+    // freopen("poseidon.out", "w", stdout); 
+    cin >> t; 
+    while (t--) solve(); 
+}
