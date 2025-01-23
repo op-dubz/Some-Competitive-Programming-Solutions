@@ -1,0 +1,41 @@
+// https://kilonova.ro/problems/24/ 
+// https://github.com/stefdasca/statement-translator/blob/main/Kilonova/0000-0099/Processed_0024.md 
+#include <iostream> 
+#include <vector> 
+#include <algorithm> 
+#include <map> 
+#include <set> 
+using namespace std; 
+#define ss second 
+#define ff first 
+typedef long long ll; 
+ll n, d; 
+struct ramen {
+    ll inputted, comesOutOfKitchen; 
+}; 
+multiset<ll> s; 
+map<ll, vector<ramen> > m; 
+int main() { 
+    ios_base::sync_with_stdio(false); cin.tie(0); cout.tie(0);
+    freopen("ramen.in", "r", stdin); 
+    freopen("ramen.out", "w", stdout); 
+    cin >> n >> d; 
+    vector<ll> res(n); 
+    for (int i = 0; i < n; i++) {
+        ll a, b; 
+        cin >> a >> b; 
+        ramen c; 
+        c.inputted = i; 
+        c.comesOutOfKitchen = a;  
+        m[b].push_back(c); 
+        s.insert(d + a); 
+    }   
+    for (auto p : m) { 
+        for (ramen i : p.ss) { 
+            ll o = *s.lower_bound(i.comesOutOfKitchen - p.ff); 
+            s.erase(o); 
+            res[i.inputted] = p.ff + o; 
+        } 
+    } 
+    for (int i = 0; i < n; i++) cout << res[i] << endl; 
+}
