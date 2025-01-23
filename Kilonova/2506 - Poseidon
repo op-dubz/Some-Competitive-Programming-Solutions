@@ -1,0 +1,62 @@
+// https://github.com/stefdasca/statement-translator/blob/main/Kilonova/2500-2599/Processed_2506.md 
+// https://kilonova.ro/problems/2506/ 
+#include <iostream>
+#include <vector> 
+#include <cstdio> 
+using namespace std; 
+typedef long long ll; 
+#define mod 1000000007
+ll n, c, m, pR, pC, res1 = 0, res2 = 1; 
+ll dr[4] = {0,0,1,-1}; 
+ll dc[4] = {1,-1,0,0}; 
+ll grid[1000][1000]; 
+bool visited[1000][1000]; 
+ll chatgptsEquationDP[1000001]; 
+bool inBounds(ll r, ll c) {
+    return r >= 0 && c >= 0 && r < n && c < m; 
+} 
+void dfs(int r, int c) {
+    visited[r][c] = true; 
+    if (grid[r][c]) res1++; 
+    for (int i = 0; i < 4; i++) {  
+        int rr = r + dr[i], cc = c + dc[i]; 
+        if (inBounds(rr, cc) && !visited[rr][cc] && grid[rr][cc] >= 0) dfs(rr, cc); 
+    }
+}
+void idk() { 
+    cin >> pR >> pC; 
+    dfs(pR - 1, pC - 1); 
+    cout << res1; 
+} 
+void idk2() { 
+    chatgptsEquationDP[0] = 1, chatgptsEquationDP[1] = 0; 
+    for (int i = 2; i <= n * m; i++) chatgptsEquationDP[i] = ((i-1) * (chatgptsEquationDP[i-1] + chatgptsEquationDP[i-2]) % mod) % mod; 
+    for (int i = 0; i <= n; i++) {
+        for (int j = 0; j <= m; j++) {
+            if (!visited[i][j] && grid[i][j] >= 0) { 
+                dfs(i, j);  
+                res2 = (res2 * chatgptsEquationDP[res1]) % mod; 
+                res1 = 0; 
+            }  
+        }
+    } 
+    cout << res2; 
+}
+int main() {
+    ios_base::sync_with_stdio(false); cin.tie(0); cout.tie(0);
+    freopen("poseidon.in", "r", stdin); 
+    freopen("poseidon.out", "w", stdout); 
+    cin >> c >> n >> m; 
+    ll cnt = 0; 
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < m; j++) {
+            cin >> grid[i][j]; 
+            if (grid[i][j] > 0) cnt++; 
+        }
+    } 
+    if (c == 1) idk(); 
+    else { 
+        if (cnt == 0) cout << 0; 
+        else idk2(); 
+    }
+}
