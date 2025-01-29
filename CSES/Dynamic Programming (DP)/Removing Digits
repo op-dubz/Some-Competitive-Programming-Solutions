@@ -1,0 +1,29 @@
+// https://cses.fi/problemset/task/1637/ 
+#include <iostream> 
+#include <vector> 
+#include <climits> 
+using namespace std; 
+int n, x, res = 0; 
+const int mod = 1000000007;  
+vector<int> dp(1000001, 0); 
+void dfs(int place, int sum, int big) {
+    sum *= 10; 
+    for (int i = 0; i < 10; i++) { 
+        if (sum + i > n) return; 
+        dp[sum + i] = sum + i - max(big, i); 
+        dfs(place + 1, sum + i, max(big, i)); 
+    }
+}
+int main() {  
+    ios_base::sync_with_stdio(false); cin.tie(0); cout.tie(0); 
+    cin >> n; 
+    for (int i = 1; i < 10; i++) { 
+        dp[i] = 0; 
+        dfs(2, i, i); 
+    }  
+    while (n != 0) {
+        res++; 
+        n = dp[n]; 
+    } 
+    cout << res; 
+}  
