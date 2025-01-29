@@ -1,0 +1,30 @@
+// https://cses.fi/problemset/task/1638 
+#include <iostream> 
+#include <vector> 
+#include <climits> 
+using namespace std; 
+int n; 
+const int mod = 1000000007;  
+int main() {  
+    ios_base::sync_with_stdio(false); cin.tie(0); cout.tie(0); 
+    cin >> n; 
+    int dp[n+1][n+1]; 
+    char input[n+1][n+1]; 
+    for (int i = 0; i <= n; i++) {
+        for (int j = 0; j <= n; j++) {
+            dp[i][j] = 0; 
+        }
+    } 
+    for (int i = 1; i <= n; i++) {
+        for (int j = 1; j <= n; j++) {
+            cin >> input[i][j]; 
+        }
+    } 
+    dp[1][1] = (input[1][1] == '*' ? 0 : 1); 
+    for (int i = 1; i <= n; i++) {
+        for (int j = 1; j <= n; j++) {
+            if (input[i][j] != '*') dp[i][j] = (dp[i][j] + dp[i-1][j] + dp[i][j-1]) % mod;    
+        }
+    } 
+    cout << dp[n][n];  
+} 
