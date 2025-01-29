@@ -1,0 +1,21 @@
+// https://cses.fi/problemset/result/11900477/
+#include <iostream> 
+#include <vector> 
+#include <climits> 
+using namespace std; 
+int n, x; 
+const int mod = 1000000007;  
+int main() { 
+    ios_base::sync_with_stdio(false); cin.tie(0); cout.tie(0); 
+    cin >> n >> x; 
+    vector<int> dp(1000001, 0); 
+    for (int i = 0; i < n; i++) { 
+        int a; cin >> a; 
+        dp[a]++; 
+        for (int j = 1; j <= x - a; j++) { 
+            dp[j + a] += dp[j]; 
+            dp[j + a] %= mod; 
+        }
+    }  
+    cout << dp[x]; 
+}  
